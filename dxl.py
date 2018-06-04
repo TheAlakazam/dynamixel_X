@@ -111,11 +111,6 @@ class Dxl:
         for i,val in ids.iteritems():
             self._write_speed(i,val)
 
-            # dxl_addparam_result = ctypes.c_ubyte(dynamixel.groupSyncWriteAddParam(self.groupSyncSpeed, i,int(val), self.LEN_MX_GOAL_POSITION)).value
-        # dxl_comm_result = dynamixel.getLastTxRxResult(self.portHandler, self.PROTOCOL_VERSION)
-        # if(dxl_comm_result != COMM_SUCCESS):
-            # print(dynamixel.getTxRxResult(self.PROTOCOL_VERSION, self.dxl_comm_result))
-        # dynamixel.groupSyncWriteClearParam(self.groupSyncSpeed)
     def enable_torque(self, ids):
         for i in ids:
             dynamixel.write1ByteTxRx(self.portHandler, self.PROTOCOL_VERSION, i, self.ADDR_MX_TORQUE_ENABLE, self.TORQUE_ENABLE)
@@ -125,15 +120,10 @@ class Dxl:
             dxl_present_speed = dynamixel.read4ByteTxRx(self.portHandler, self.PROTOCOL_VERSION, i, self.ADDR_MX_PRESENT_SPEED)
             moving_speed[i] = dxl_present_speed
         return moving_speed
+    def set_wheel_mode(self, ids, val = 1):
+        for i in ids:
+            dynamixel.write1ByteTxRx(self.portHandler,self.PROTOCOL_VERSION,i,11,val)
+    def disable_torque(self, ids):
+        for i in ids:
+            dynamixel.write1ByteTxRx(self.portHandler, self.PROTOCOL_VERSION, i, self.ADDR_MX_TORQUE_ENABLE, self.TORQUE_DISABLE)
 
-ports = get_available_ports()
-
-d = Dxl(ports[0])
-ids = d.scan(30)
-print ids
-d.enable_torque(ids)
-d.set_moving_speed({2:819, 3:500, 4:200})
-d.set_goal_position({2:-0,3:0})
-print d.get_present_position(ids)
-print d.get_moving_speed(ids)
-# d.set_goal_position({9 : 100, 17: -100})
